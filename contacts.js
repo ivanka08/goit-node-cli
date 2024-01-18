@@ -29,13 +29,19 @@ async function removeContact(contactId) {
 
 async function addContact(name, email, phone) {
   const contacts = await listContacts();
-  const contactId = contacts.length > 0 ? Math.max(...contacts.map((contact) => contact.id)) + 1 : 1;
+  
+  const numericIds = contacts.map((contact) => contact.id).filter((id) => typeof id === 'number');
+
+  const maxId = numericIds.length > 0 ? Math.max(...numericIds) : 0;
+  const contactId = maxId + 1;
+
   const contact = {
     id: contactId,
     name,
     email,
     phone,
   };
+
   contacts.push(contact);
   await writeFile(contactsPath, JSON.stringify(contacts), "utf-8");
   return contact;
